@@ -2,7 +2,7 @@ import fs from 'fs'
 import { exit } from 'process'
 
 const registers = new Array(8)
-let noline = 1
+let noline = 0
 
 function logError (errorText: string) {
     console.error(`Error l.${noline}: ${errorText}`)
@@ -59,12 +59,11 @@ fs.readFile('test/test.txt', (err, data) => {
 
     const lines = data.toString().split('\n')
 
-    while (noline <= lines.length) {
+    while (noline < lines.length) {
+        noline++
         const line = lines[noline - 1]
-        if (line.trim() === '') {
-            noline++
-            continue
-        }
+        if (line.trim() === '') continue
+
         let found = false
         for (const j in commands) {
             const match = new RegExp(`^${j}(?: +(.*))?`, 'i').exec(line)
@@ -76,6 +75,5 @@ fs.readFile('test/test.txt', (err, data) => {
             }
         }
         if (!found) logError('Unknown command')
-        noline++
     }
 })
