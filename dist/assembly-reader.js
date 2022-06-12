@@ -83,10 +83,20 @@ const commands = {
     bgt: (label) => { goToBranch(label, result === 'greater'); },
     blt: (label) => { goToBranch(label, result === 'less'); }
 };
-fs__default['default'].readFile('test/test.txt', (err, data) => {
+const inputFileName = process.argv[2];
+if (inputFileName === undefined) {
+    console.error('Please enter an input file name');
+    process.exit(1);
+}
+fs__default['default'].readFile(inputFileName, (err, data) => {
     var _a, _b;
-    if (err)
+    if (err) {
+        if (err.code === 'ENOENT') {
+            console.error(`no such file or directory: ${inputFileName}`);
+            process.exit(1);
+        }
         throw err;
+    }
     const lines = data.toString().split('\n');
     for (const i in lines) {
         const line = lines[i].trim();

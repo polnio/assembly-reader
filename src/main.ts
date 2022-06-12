@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { exit } from 'process'
+import { exit, argv } from 'process'
 
 const registers = new Array(8)
 const branches: {[key: string]: number} = {}
@@ -79,8 +79,19 @@ const commands = {
     blt: (label: string) => { goToBranch(label, result === 'less') }
 }
 
-fs.readFile('test/test.txt', (err, data) => {
-    if (err) throw err
+const inputFileName = argv[2]
+if (inputFileName === undefined) {
+    console.error('Please enter an input file name')
+    exit(1)
+}
+fs.readFile(inputFileName, (err, data) => {
+    if (err) {
+        if (err.code === 'ENOENT') {
+            console.error(`no such file or directory: ${inputFileName}`)
+            exit(1)
+        }
+        throw err
+    }
 
     const lines = data.toString().split('\n')
     for (const i in lines) {
